@@ -53,7 +53,7 @@ class Model:
             keras.callbacks.EarlyStopping(monitor='val_loss', patience=5000, restore_best_weights=True),
             keras.callbacks.TensorBoard(log_dir='tensorboard')
         ])
-        self.model.save('best_model.tf')
+        self.model.save(self.model_path)
 
     def evaluate(self):
         """
