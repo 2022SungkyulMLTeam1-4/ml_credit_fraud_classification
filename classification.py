@@ -26,11 +26,19 @@ class Model:
         length = self.input_shape[0]
         self.model = keras.Sequential([
             layers.Input(self.input_shape),
-            *[layers.Dense(units=length, activation=activations.relu,
-                           kernel_initializer=initializers.initializers_v2.HeNormal(seed=42)),
-              layers.Dense(units=length, activation=activations.relu,
-                           kernel_initializer=initializers.initializers_v2.HeNormal(seed=42)),
-              layers.Dropout(0.3)] * 3,
+            layers.BatchNormalization(),
+            layers.Dense(units=29, activation=activations.selu,
+                         kernel_initializer=initializers.initializers_v2.LecunNormal(seed=42)),
+            layers.AlphaDropout(rate=0.2, seed=42),
+            layers.Dense(units=40, activation=activations.selu,
+                         kernel_initializer=initializers.initializers_v2.LecunNormal(seed=42)),
+            layers.AlphaDropout(rate=0.2, seed=42),
+            layers.Dense(units=40, activation=activations.selu,
+                         kernel_initializer=initializers.initializers_v2.LecunNormal(seed=42)),
+            layers.AlphaDropout(rate=0.2, seed=42),
+            layers.Dense(units=30, activation=activations.selu,
+                         kernel_initializer=initializers.initializers_v2.LecunNormal(seed=42)),
+            layers.AlphaDropout(rate=0.2, seed=42),
             layers.Dense(1, activation=activations.sigmoid)
         ])
         self.model.compile(optimizer=optimizers.Nadam(), loss=losses.binary_crossentropy,
@@ -44,7 +52,7 @@ class Model:
         """
         모델 훈련을 진행합니다.
         """
-        self.model.fit(x=self.x_train, y=self.y_train, batch_size=5000, validation_data=[self.x_test, self.y_test],
+        self.model.fit(x=self.x_train, y=self.y_train, batch_size=10000, validation_data=[self.x_test, self.y_test],
                        epochs=1000000,
                        callbacks=[
                            callbacks.BackupAndRestore('./backup/', delete_checkpoint=True),
