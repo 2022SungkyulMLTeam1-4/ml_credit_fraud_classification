@@ -1,14 +1,7 @@
-import os
-
 import keras
-import keras.activations
-import keras.layers
-import keras.losses
-import keras.callbacks
-import keras.optimizers
-import keras.metrics
 import sklearn
 import tensorflow as tf
+from keras import activations, layers, losses, callbacks, optimizers, metrics, initializers
 
 import data
 
@@ -32,14 +25,16 @@ class Model:
         self.input_shape = (29,)
         length = self.input_shape[0]
         self.model = keras.Sequential([
-            keras.layers.Input(self.input_shape),
-            *[keras.layers.Dense(units=length, activation=keras.activations.relu),
-              keras.layers.Dense(units=length, activation=keras.activations.relu),
-              keras.layers.Dropout(0.3)] * 5,
-            keras.layers.Dense(1, activation=keras.activations.sigmoid)
+            layers.Input(self.input_shape),
+            *[layers.Dense(units=length, activation=activations.relu,
+                           kernel_initializer=initializers.initializers_v2.HeNormal(seed=42)),
+              layers.Dense(units=length, activation=activations.relu,
+                           kernel_initializer=initializers.initializers_v2.HeNormal(seed=42)),
+              layers.Dropout(0.3)] * 3,
+            layers.Dense(1, activation=activations.sigmoid)
         ])
-        self.model.compile(optimizer=keras.optimizers.Nadam(), loss=keras.losses.binary_crossentropy,
-                           metrics=[keras.metrics.accuracy])
+        self.model.compile(optimizer=optimizers.Nadam(), loss=losses.binary_crossentropy,
+                           metrics=[metrics.accuracy])
         x_data, y_data = data.load_and_preprocess_data(data_path)
         self.x_train, self.x_test, self.y_train, self.y_test = sklearn.model_selection.train_test_split(x_data, y_data,
                                                                                                         train_size=0.8,
@@ -49,13 +44,13 @@ class Model:
         """
         모델 훈련을 진행합니다.
         """
-        self.model.fit(x=self.x_train, y=self.y_train, batch_size=10000, validation_data=[self.x_test, self.y_test],
+        self.model.fit(x=self.x_train, y=self.y_train, batch_size=5000, validation_data=[self.x_test, self.y_test],
                        epochs=1000000,
                        callbacks=[
-                           keras.callbacks.BackupAndRestore('./backup/', delete_checkpoint=True),
-                           keras.callbacks.CSVLogger(f'./logs/{self.model_name}.log', append=True),
-                           keras.callbacks.EarlyStopping(monitor='val_loss', patience=5000, restore_best_weights=True),
-                           keras.callbacks.TensorBoard(log_dir='tensorboard')
+                           callbacks.BackupAndRestore('./backup/', delete_checkpoint=True),
+                           callbacks.CSVLogger(f'./logs/{self.model_name}.log', append=True),
+                           callbacks.EarlyStopping(monitor='val_loss', patience=5000, restore_best_weights=True),
+                           callbacks.TensorBoard(log_dir='tensorboard')
                        ])
         self.model.save(self.model_path)
 
