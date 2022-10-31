@@ -30,7 +30,10 @@ class Model:
             layers.Dense(units=29, activation=activations.selu,
                          kernel_initializer=initializers.initializers_v2.LecunNormal(seed=42)),
             layers.AlphaDropout(rate=0.3, seed=42),
-            layers.Dense(units=40, activation=activations.selu,
+            layers.Dense(units=10, activation=activations.selu,
+                         kernel_initializer=initializers.initializers_v2.LecunNormal(seed=42)),
+            layers.AlphaDropout(rate=0.3, seed=42),
+            layers.Dense(units=10, activation=activations.selu,
                          kernel_initializer=initializers.initializers_v2.LecunNormal(seed=42)),
             layers.AlphaDropout(rate=0.3, seed=42),
             layers.Dense(units=10, activation=activations.selu,
@@ -41,7 +44,7 @@ class Model:
             layers.AlphaDropout(rate=0.3, seed=42),
             layers.Dense(1, activation=activations.sigmoid)
         ])
-        self.model.compile(optimizer=optimizers.Nadam(), loss=losses.binary_crossentropy,
+        self.model.compile(optimizer=optimizers.Nadam(learning_rate=0.0001), loss=losses.binary_crossentropy,
                            metrics=[metrics.accuracy])
         x_data, y_data = data.load_and_preprocess_data(data_path)
         self.x_train, self.x_test, self.y_train, self.y_test = sklearn.model_selection.train_test_split(x_data, y_data,
@@ -52,7 +55,7 @@ class Model:
         """
         모델 훈련을 진행합니다.
         """
-        self.model.fit(x=self.x_train, y=self.y_train, batch_size=10000, validation_data=[self.x_test, self.y_test],
+        self.model.fit(x=self.x_train, y=self.y_train, batch_size=2500, validation_data=[self.x_test, self.y_test],
                        epochs=1000000,
                        callbacks=[
                            callbacks.BackupAndRestore('./backup/', delete_checkpoint=True),
