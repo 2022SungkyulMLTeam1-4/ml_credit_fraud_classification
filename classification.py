@@ -54,9 +54,9 @@ class Model:
         """
         모델 훈련을 진행합니다.
         """
-        shutil.rmtree('logs')
-        shutil.rmtree('backup')
-        shutil.rmtree('tensorboard')
+        shutil.rmtree('logs', ignore_errors=True)
+        shutil.rmtree('backup', ignore_errors=True)
+        shutil.rmtree('tensorboard', ignore_errors=True)
         os.mkdir('logs')
         os.mkdir('backup')
         os.mkdir('tensorboard')
