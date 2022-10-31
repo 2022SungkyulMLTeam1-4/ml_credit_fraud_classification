@@ -1,3 +1,5 @@
+import os
+import shutil
 import keras
 import sklearn
 import tensorflow as tf
@@ -7,7 +9,7 @@ import data
 
 # 서버에서 사용하는 2개의 GPU 중, 2번째 GPU만을 사용하여 연산을 수행하도록 합니다.
 gpu_list = tf.config.experimental.list_physical_devices(device_type='GPU')
-tf.config.experimental.set_visible_devices(gpu_list[1], 'GPU')
+tf.config.experimental.set_visible_devices(gpu_list[0], 'GPU')
 
 
 class Model:
@@ -48,11 +50,16 @@ class Model:
         self.x_train, self.x_test, self.y_train, self.y_test = sklearn.model_selection.train_test_split(x_data, y_data,
                                                                                                         train_size=0.8,
                                                                                                         random_state=42)
-
     def train(self):
         """
         모델 훈련을 진행합니다.
         """
+        shutil.rmtree('logs')
+        shutil.rmtree('backup')
+        shutil.rmtree('tensorboard')
+        os.mkdir('logs')
+        os.mkdir('backup')
+        os.mkdir('tensorboard')
         self.model.fit(x=self.x_train, y=self.y_train, batch_size=2500, validation_data=[self.x_test, self.y_test],
                        epochs=1000000,
                        callbacks=[
