@@ -23,10 +23,8 @@ class Model:
         self.model_name = model_name
         self.model_path = f"{model_name}.tf"
         self.input_shape = (29,)
-        length = self.input_shape[0]
         self.model = keras.Sequential([
             layers.Input(self.input_shape),
-            layers.BatchNormalization(),
             layers.Dense(units=29, activation=activations.selu,
                          kernel_initializer=initializers.initializers_v2.LecunNormal(seed=42)),
             layers.AlphaDropout(rate=0.3, seed=42),
